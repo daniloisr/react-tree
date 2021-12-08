@@ -44,6 +44,12 @@ export type State = {
   flattenedTree: FlattenedTree;
   // Id of the currently dragged item
   draggedItemId?: ItemId;
+  dropPlaceholder?: {
+    top: number,
+    left: number,
+    width: number,
+    height: number,
+  }
 };
 
 export type Combine = {

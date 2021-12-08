@@ -9,6 +9,7 @@ import {
   DraggableProvided,
   DraggableStateSnapshot,
   DroppableProvided,
+  DroppableStateSnapshot
 } from 'react-beautiful-dnd-next';
 import { getBox } from 'css-box-model';
 import { calculateFinalDropPositions } from './Tree-utils';
@@ -23,6 +24,13 @@ import {
   getIndexById,
 } from '../../utils/flat-tree';
 import DelayedFunction from '../../utils/delayed-function';
+
+function draggable2placeholder(el: Element | undefined) {
+  if (!el) return undefined;
+
+  const { contentBox: { top, left, height, width } } = getBox(el)
+  return { top, left, height, width }
+}
 
 export default class Tree extends Component<Props, State> {
   static defaultProps = {
@@ -40,6 +48,7 @@ export default class Tree extends Component<Props, State> {
   state = {
     flattenedTree: [],
     draggedItemId: undefined,
+    dropPlaceholder: undefined,
   };
 
   // State of dragging.
@@ -83,9 +92,12 @@ export default class Tree extends Component<Props, State> {
       destination: result.source,
       mode: result.mode,
     };
+
     this.setState({
       draggedItemId: result.draggableId,
+      dropPlaceholder: draggable2placeholder(this.itemsElement[result.draggableId])
     });
+
     if (onDragStart) {
       onDragStart(result.draggableId);
     }
@@ -99,6 +111,18 @@ export default class Tree extends Component<Props, State> {
     }
 
     this.expandTimer.stop();
+
+    if (update.destination) {
+      // get the current destination by looking at dom nodes
+      // console.log('update', update)
+      // console.log('children', this.containerElement.children[update.destination.index])
+
+      this.setState({
+        dropPlaceholder: draggable2placeholder(this.containerElement.children[update.destination.index])
+      });
+    }
+
+    // todo-danilo: handle combine placeholder
     if (update.combine) {
       const { draggableId } = update.combine;
       const item: FlattenedItem | undefined = getItemById(
@@ -109,6 +133,7 @@ export default class Tree extends Component<Props, State> {
         this.expandTimer.start(() => onExpand(draggableId, item.path));
       }
     }
+
     this.dragState = {
       ...this.dragState,
       destination: update.destination,
@@ -134,6 +159,7 @@ export default class Tree extends Component<Props, State> {
 
     this.setState({
       draggedItemId: undefined,
+      dropPlaceholder: undefined,
     });
 
     const { sourcePosition, destinationPosition } = calculateFinalDropPositions(
@@ -142,6 +168,7 @@ export default class Tree extends Component<Props, State> {
       finalDragState,
     );
 
+    console.log('drop/dest', destinationPosition)
     onDragEnd(sourcePosition, destinationPosition);
 
     this.dragState = undefined;
@@ -293,6 +320,7 @@ export default class Tree extends Component<Props, State> {
 
   render() {
     const { isNestingEnabled } = this.props;
+    const { dropPlaceholder } = this.state;
     const renderedItems = this.renderItems();
 
     return (
@@ -306,7 +334,7 @@ export default class Tree extends Component<Props, State> {
           isCombineEnabled={isNestingEnabled}
           ignoreContainerClipping
         >
-          {(provided: DroppableProvided) => {
+          {(provided: DroppableProvided, snapshot: DroppableStateSnapshot) => {
             const finalProvided: DroppableProvided = this.patchDroppableProvided(
               provided,
             );
@@ -320,6 +348,20 @@ export default class Tree extends Component<Props, State> {
               >
                 {renderedItems}
                 {provided.placeholder}
+                {dropPlaceholder && snapshot.isDraggingOver && (
+                  <div
+                    className="placeholder"
+                    style={{
+                      top: dropPlaceholder.top,
+                      left: dropPlaceholder.left,
+                      height: dropPlaceholder.height,
+                      width: dropPlaceholder.width,
+                      background: '#62AAD5',
+                      transition: 'top 0.1s',
+                      position: 'absolute'
+                    }}
+                  />
+                )}
               </div>
             );
           }}
