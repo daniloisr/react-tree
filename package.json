@@ -1,5 +1,5 @@
 {
-  "name": "@atlaskit/tree",
+  "name": "@daniloisr/react-tree",
   "version": "8.4.0",
   "description": "A React Component for displaying expandable and sortable tree hierarchies",
   "author": "Atlassian Pty Ltd",
