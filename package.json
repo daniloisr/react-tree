@@ -2,25 +2,12 @@
   "name": "@atlaskit/tree",
   "version": "8.4.0",
   "description": "A React Component for displaying expandable and sortable tree hierarchies",
-  "publishConfig": {
-    "registry": "https://registry.npmjs.org/"
-  },
-  "repository": "https://bitbucket.org/atlassian/atlassian-frontend",
   "author": "Atlassian Pty Ltd",
   "license": "Apache-2.0",
-  "main": "dist/cjs/index.js",
-  "module": "dist/esm/index.js",
-  "module:es2019": "dist/es2019/index.js",
-  "types": "dist/types/index.d.ts",
-  "sideEffects": false,
-  "atlaskit:src": "src/index.ts",
-  "atlassian": {
-    "team": "Confluence Discovery & Organization",
-    "deprecatedAutoEntryPoints": true,
-    "releaseModel": "continuous",
-    "website": {
-      "name": "Tree"
-    }
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "rm -rf dist/* && tsc"
   },
   "dependencies": {
     "@babel/runtime": "^7.0.0",
@@ -37,10 +24,9 @@
     "@atlaskit/icon": "^21.9.0",
     "@atlaskit/navigation": "^37.0.0",
     "@atlaskit/spinner": "^15.0.0",
-    "@atlaskit/ssr": "*",
     "@atlaskit/theme": "^12.0.0",
-    "@atlaskit/visual-regression": "*",
-    "@atlassian/atlassian-frontend-prettier-config-1.0.1": "npm:@atlassian/atlassian-frontend-prettier-config@1.0.1",
+    "@types/babel__core": "^7.1.17",
+    "@types/babel__template": "^7.4.1",
     "enzyme": "^3.10.0",
     "enzyme-adapter-react-16": "^1.15.1",
     "exenv": "^1.2.2",
@@ -48,11 +34,5 @@
     "styled-components": "^3.2.6",
     "typescript": "3.9.6",
     "wait-for-expect": "^1.2.0"
-  },
-  "keywords": [
-    "atlaskit",
-    "react",
-    "ui"
-  ],
-  "prettier": "@atlassian/atlassian-frontend-prettier-config-1.0.1"
+  }
 }
