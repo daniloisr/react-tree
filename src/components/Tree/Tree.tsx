@@ -122,13 +122,17 @@ export default class Tree extends Component<Props, State> {
       });
     }
 
-    // todo-danilo: handle combine placeholder
     if (update.combine) {
       const { draggableId } = update.combine;
       const item: FlattenedItem | undefined = getItemById(
         flattenedTree,
         draggableId,
       );
+
+      this.setState({
+        dropPlaceholder: draggable2placeholder(this.itemsElement[draggableId])
+      });
+
       if (item && this.isExpandable(item)) {
         this.expandTimer.start(() => onExpand(draggableId, item.path));
       }
@@ -357,6 +361,7 @@ export default class Tree extends Component<Props, State> {
                       height: dropPlaceholder.height,
                       width: dropPlaceholder.width,
                       background: '#62AAD5',
+                      opacity: 0.25,
                       transition: 'top 0.1s',
                       position: 'absolute'
                     }}
