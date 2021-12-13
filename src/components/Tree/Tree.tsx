@@ -25,11 +25,18 @@ import {
 } from '../../utils/flat-tree';
 import DelayedFunction from '../../utils/delayed-function';
 
-function draggable2placeholder(el: Element | undefined) {
+function elementBox(el: Element | undefined) {
   if (!el) return undefined;
 
-  const { contentBox: { top, left, height, width } } = getBox(el)
+  const { marginBox: { top, left, height, width } } = getBox(el)
   return { top, left, height, width }
+}
+
+function dropPlaceholderPos(root: Element, index: number) {
+  const firstChild = root.children[0]
+  const { marginBox: { top, left } } = getBox(root)
+  const { marginBox: { height, width } } = getBox(firstChild)
+  return { top: top + height * index, left, height, width }
 }
 
 export default class Tree extends Component<Props, State> {
@@ -95,7 +102,7 @@ export default class Tree extends Component<Props, State> {
 
     this.setState({
       draggedItemId: result.draggableId,
-      dropPlaceholder: draggable2placeholder(this.itemsElement[result.draggableId])
+      dropPlaceholder: dropPlaceholderPos(this.containerElement, result.source.index)
     });
 
     if (onDragStart) {
@@ -113,12 +120,8 @@ export default class Tree extends Component<Props, State> {
     this.expandTimer.stop();
 
     if (update.destination) {
-      // get the current destination by looking at dom nodes
-      // console.log('update', update)
-      // console.log('children', this.containerElement.children[update.destination.index])
-
       this.setState({
-        dropPlaceholder: draggable2placeholder(this.containerElement.children[update.destination.index])
+        dropPlaceholder: dropPlaceholderPos(this.containerElement, update.destination.index)
       });
     }
 
@@ -130,7 +133,7 @@ export default class Tree extends Component<Props, State> {
       );
 
       this.setState({
-        dropPlaceholder: draggable2placeholder(this.itemsElement[draggableId])
+        dropPlaceholder: elementBox(this.itemsElement[draggableId])
       });
 
       if (item && this.isExpandable(item)) {
@@ -172,7 +175,6 @@ export default class Tree extends Component<Props, State> {
       finalDragState,
     );
 
-    console.log('drop/dest', destinationPosition)
     onDragEnd(sourcePosition, destinationPosition);
 
     this.dragState = undefined;
