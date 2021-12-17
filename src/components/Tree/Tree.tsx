@@ -32,11 +32,15 @@ function elementBox(el: Element | undefined) {
   return { top, left, height, width }
 }
 
-function dropPlaceholderPos(root: Element, index: number) {
-  const firstChild = root.children[0]
-  const { marginBox: { top, left } } = getBox(root)
-  const { marginBox: { height, width } } = getBox(firstChild)
-  return { top: top + height * index, left, height, width }
+function dropPlaceholderPos(root: Element, draggable: Element, index: number) {
+  const children = Array.from(root.children)
+  const { marginBox: { left, top: rootTop } } = getBox(root)
+  const top = children
+    .slice(0, index)
+    .reduce((acc, child: any) => acc + getBox(child).marginBox.height, rootTop)
+
+  const { marginBox: { height, width } } = getBox(draggable)
+  return { top, left, height, width }
 }
 
 export default class Tree extends Component<Props, State> {
@@ -102,7 +106,7 @@ export default class Tree extends Component<Props, State> {
 
     this.setState({
       draggedItemId: result.draggableId,
-      dropPlaceholder: dropPlaceholderPos(this.containerElement, result.source.index)
+      dropPlaceholder: dropPlaceholderPos(this.containerElement, this.itemsElement[result.draggableId], result.source.index)
     });
 
     if (onDragStart) {
@@ -121,7 +125,7 @@ export default class Tree extends Component<Props, State> {
 
     if (update.destination) {
       this.setState({
-        dropPlaceholder: dropPlaceholderPos(this.containerElement, update.destination.index)
+        dropPlaceholder: dropPlaceholderPos(this.containerElement, this.itemsElement[update.draggableId], update.destination.index)
       });
     }
 
