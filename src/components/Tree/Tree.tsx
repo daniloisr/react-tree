@@ -54,6 +54,7 @@ export default class Tree extends Component<Props, State> {
     offsetPerLevel: 35,
     isDragEnabled: false,
     isNestingEnabled: false,
+    dropPlaceholderClassName: '',
   };
 
   state = {
@@ -329,7 +330,7 @@ export default class Tree extends Component<Props, State> {
   };
 
   render() {
-    const { isNestingEnabled } = this.props;
+    const { isNestingEnabled, dropPlaceholderClassName } = this.props;
     const { dropPlaceholder } = this.state;
     const renderedItems = this.renderItems();
 
@@ -360,15 +361,12 @@ export default class Tree extends Component<Props, State> {
                 {provided.placeholder}
                 {dropPlaceholder && snapshot.isDraggingOver && (
                   <div
-                    className="placeholder"
+                    className={dropPlaceholderClassName}
                     style={{
                       top: dropPlaceholder.top,
                       left: dropPlaceholder.left,
                       height: dropPlaceholder.height,
                       width: dropPlaceholder.width,
-                      background: '#62AAD5',
-                      opacity: 0.25,
-                      transition: 'top 0.1s',
                       position: 'absolute'
                     }}
                   />

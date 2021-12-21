@@ -37,6 +37,8 @@ export type Props = {
   isDragEnabled: boolean | ((item: TreeItem) => boolean);
   /** Boolean to turn on hovering while dragging */
   isNestingEnabled: boolean;
+  /** String for the drop placeholder class name */
+  dropPlaceholderClassName: string;
 };
 
 export type State = {
